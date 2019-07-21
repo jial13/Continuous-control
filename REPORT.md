@@ -28,24 +28,32 @@ The Actor-Critic method combines the two networks to accelerate the learning pro
 #### Actor Model
 
 `Layers:`
--       self.fc1 = nn.Linear(33, 128)
-        self.fc2 = nn.Linear(128, 128)
-        self.fc3 = nn.Linear(128, 128)
+-       self.fc1 = nn.Linear(33, 256)
+        self.fc2 = nn.Linear(256, 256)
+        self.fc3 = nn.Linear(256, 4)
+        self.bn = nn.BatchNorm1d(fc1_units)
 `Forward:`
 -       def forward(self, state):
+            if state.dim() == 1:
+                state = torch.unsqueeze(state,0)
             x = F.relu(self.fc1(state))
+            x = self.bn(x)
             x = F.relu(self.fc2(x))
-            return F.tanh(self.fc3(x)) 
+            return F.tanh(self.fc3(x))
 
 
 #### Critic Model
 `Layers:`
--       self.fc1 = nn.Linear(33, 128)
-        self.fc2 = nn.Linear(128+4, 128)
-        self.fc3 = nn.Linear(128, 1)
+-       self.fc1 = nn.Linear(33, 256)
+        self.fc2 = nn.Linear(256+4, 256)
+        self.fc3 = nn.Linear(256, 1)
+        self.bn = nn.BatchNorm1d(fc1_units)
 `Forward:`
 -       def forward(self, state, action):
+            if state.dim() == 1:
+                state = torch.unsqueeze(state,0)
             x = F.relu(self.fcs1(state))
+            x = self.bn(x)
             x = torch.cat((x, action), dim=1)
             x = F.relu(self.fc2(x))
             return self.fc3(x)
@@ -59,15 +67,7 @@ The experiences are sampled randomly to avoid over-fitting and bias.
 
 ## Result
 
-The agent was able to archive the goal with 96 and 119 episodes, however, without the reset_parameters method to initialize the weights, the agent was not able to reach the goal even with 200 episodes.
-
-It seems like weights initialization plays great part in the training.
-
-    def reset_parameters(self):
-        self.fc1.weight.data.uniform_(*hidden_init(self.fc1))
-        self.fc2.weight.data.uniform_(*hidden_init(self.fc2))
-        self.fc3.weight.data.uniform_(-3e-3, 3e-3)
-
+The agent was able to archive the an average reward of 30 over the last 100 episode with 544 episodes
 
 ## Future work
 - Experiment with dropout layers on the agent
