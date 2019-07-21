@@ -69,6 +69,8 @@ The experiences are sampled randomly to avoid over-fitting and bias.
 
 The agent was able to archive the an average reward of 30 over the last 100 episode with 544 episodes
 
+The scores diagram can be found in Continuous_Control.ipynb notebook
+
 ## Future work
 - Experiment with dropout layers on the agent
 - Experience replay prioritization, select experience based on priority value instead of random samepling
